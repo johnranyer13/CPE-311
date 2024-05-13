@@ -1,19 +1,19 @@
-// diskSA.jsx
-export function FCFS_Disk_Scheduling(requests) {
-    let head_position = 0;
+export function FCFS_Disk_Scheduling(requests, currentCylinder) {
+    let head_position = currentCylinder;
     let current_request = 0;
 
     while (current_request < requests.length) {
         if (current_request!== head_position) {
             head_position = current_request;
-            console.log(`Moved head to position ${head_position}`);
         }
         current_request++;
     }
+    return head_position; // Return the final head position
 }
 
-export function SCAN_Disk_Scheduling(requests) {
-    let head_position = 0;
+
+export function SCAN_Disk_Scheduling(requests, currentCylinder) {
+    let head_position = currentCylinder;
     let current_request = 0;
     let direction = 1; // 1 for forward, -1 for backward
     let last_request = requests[requests.length - 1];
@@ -33,11 +33,12 @@ export function SCAN_Disk_Scheduling(requests) {
 
         current_request += direction;
     }
+    return head_position;
 }
 
 
-export function CSCAN_Disk_Scheduling(requests) {
-    let head_position = 0;
+export function CSCAN_Disk_Scheduling(requests, currentCylinder) {
+    let head_position = currentCylinder;
     let current_request = 0;
     let direction = 1; // 1 for forward, -1 for backward
     let last_request = requests[requests.length - 1];
@@ -57,5 +58,6 @@ export function CSCAN_Disk_Scheduling(requests) {
 
         current_request += direction;
     }
+    return head_position;
 }
 
