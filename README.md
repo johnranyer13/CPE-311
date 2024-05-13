@@ -1,3 +1,10 @@
+installed commands
+npm i
+npx shadcn-ui@latest add button
+npx shadcn-ui@latest add input
+npm install chart.js react-chartjs-2
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
