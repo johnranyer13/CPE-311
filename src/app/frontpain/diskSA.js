@@ -1,69 +1,114 @@
-// Assuming this is part of a larger component file
 import React, { useState } from 'react';
+import { Button } from "@/components/ui/button"
 import { Input } from '@/components/ui/input';
-import { FCFS_Disk_Scheduling, SCAN_Disk_Scheduling, CSCAN_Disk_Scheduling } from "@/app/backpain/diskSA.jsx";
+import { calculatePositionsAndTotalSeekTime } from "@/app/backpain/diskSA.jsx";
+import { Chart as ChartJS } from 'chart.js/auto'; // Import Chart.js auto configuration
+import { Chart } from 'react-chartjs-2'; // Import react-chartjs-2
+import { CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { Line } from 'react-chartjs-2'; 
 
-const DiskSchedulingInput = ({ onFormSubmit }) => {
-  const [cylinderSize, setCylinderSize] = useState('');
-  const [startCylinder, setStartCylinder] = useState('');
-  const [endCylinder, setEndCylinder] = useState('');
-  const [currentCylinder, setCurrentCylinder] = useState('');
-  const [pendingRequestsCount, setPendingRequestsCount] = useState('');
-  const [pendingRequests, setPendingRequests] = useState('');
+// Register the necessary components with Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const pendingRequestsArray = pendingRequests.split(',').map(Number);
 
-    // Call the disk scheduling algorithms with the pending requests
-    FCFS_Disk_Scheduling(pendingRequestsArray);
-    SCAN_Disk_Scheduling(pendingRequestsArray);
-    CSCAN_Disk_Scheduling(pendingRequestsArray);
+const DiskSchedulingInput = () => {
+  const [cylinderSize, setCylinderSize] = useState(0);
+  const [startCylinder, setStartCylinder] = useState(0);
+  const [endCylinder, setEndCylinder] = useState(0);
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [headStartCylinder, setHeadStartCylinder] = useState(0); // Added headStartCylinder state
+  const [totalSeekTimeFCFS, setTotalSeekTimeFCFS] = useState(0);
+  const [totalSeekTimeSCAN, setTotalSeekTimeSCAN] = useState(0);
+  const [totalSeekTimeCSCAN, setTotalSeekTimeCSCAN] = useState(0);
+  const [positions, setPositions] = useState([]);
+  const [fcfsChartData, setFcfsChartData] = useState({});
+  const [scanChartData, setScanChartData] = useState({});
+  const [cscanChartData, setCscanChartData] = useState({});
+    
 
-    // No need to await synchronous functions
-    // onFormSubmit is called with the form data regardless of the algorithms' outcomes
 
-    onFormSubmit({
-      cylinderSize,
-      startCylinder,
-      endCylinder,
-      currentCylinder,
-      pendingRequestsCount,
-      pendingRequests: pendingRequestsArray,
-      // Results from the algorithms are not used here, as they are assumed to be side-effect only
-    });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setHeadStartCylinder(headStartCylinder); // Ensure headStartCylinder is updated before calculations
+
+    // Calculate for all algorithms
+    const fcfsResult = calculatePositionsAndTotalSeekTime('FCFS', pendingRequests, startCylinder, endCylinder, headStartCylinder);
+    const scanResult = calculatePositionsAndTotalSeekTime('SCAN', pendingRequests, startCylinder, endCylinder, headStartCylinder);
+    const cscanResult = calculatePositionsAndTotalSeekTime('C-SCAN', pendingRequests, startCylinder, endCylinder, headStartCylinder);
+
+    // Set state with the calculated results
+    setPositions(fcfsResult.positions);
+    setPositions(scanResult.positions);
+    setPositions(cscanResult.positions);
+    setTotalSeekTimeFCFS(fcfsResult.totalSeekTimeFCFS);
+    setTotalSeekTimeSCAN(scanResult.totalSeekTimeSCAN);
+    setTotalSeekTimeCSCAN(cscanResult.totalSeekTimeCSCAN);
+
+    // Debugging: Log the results
+    console.log(fcfsResult);
+    console.log(scanResult);
+    console.log(cscanResult);
+
+    // Log the total seek times
+    console.log(`Total Seek Time for SCAN: ${scanResult.totalSeekTimeSCAN}`);
+    console.log(`Total Seek Time for FCFS: ${fcfsResult.totalSeekTimeFCFS}`);
+    console.log(`Total Seek Time for C-SCAN: ${cscanResult.totalSeekTimeCSCAN}`);
+
   };
+
 
   return (
     <form onSubmit={handleSubmit}>
-      <div>
-        <label>Cylinder Size:</label>
-        <Input type="number" value={cylinderSize} onChange={(e) => setCylinderSize(e.target.value)} required />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', minWidth: '300px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          <label style={{ marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
+            Cylinder Size:
+          </label>
+            <Input type="number" value={cylinderSize} onChange={(e) => setCylinderSize(e.target.value)} required />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          <label style={{ marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
+            Start Cylinder:
+          </label>
+            <Input type="number" value={startCylinder} onChange={(e) => setStartCylinder(e.target.value)} required />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          <label style={{ marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
+            End Cylinder:
+          </label>
+            <Input type="number" value={endCylinder} onChange={(e) => setEndCylinder(e.target.value)} required />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          <label style={{ marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
+            Head Start Cylinder:
+          </label>
+            <Input type="number" value={headStartCylinder} onChange={(e) => setHeadStartCylinder(e.target.value)} required />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          <label style={{ marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
+            Pending Requests:
+          </label>
+          <Input placeholder="comma separated" type="text" value={pendingRequests.join(',')} onChange={(e) => setPendingRequests(e.target.value.split(',').map(Number))} required />
+        </div>
       </div>
-      <div>
-        <label>Start Cylinder:</label>
-        <Input type="number" value={startCylinder} onChange={(e) => setStartCylinder(e.target.value)} required />
-      </div>
-      <div>
-        <label>End Cylinder:</label>
-        <Input type="number" value={endCylinder} onChange={(e) => setEndCylinder(e.target.value)} required />
-      </div>
-      <div>
-        <label>Current Serving Cylinder:</label>
-        <Input type="number" value={currentCylinder} onChange={(e) => setCurrentCylinder(e.target.value)} required />
-      </div>
-      <div>
-        <label>Pending Requests Count:</label>
-        <Input type="number" value={pendingRequestsCount} onChange={(e) => setPendingRequestsCount(e.target.value)} required />
-      </div>
-      <div>
-        <label>Pending Requests (comma-separated):</label>
-        <Input type="text" value={pendingRequests} onChange={(e) => setPendingRequests(e.target.value)} required />
-      </div>
-      <button type="submit">Submit</button>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+          <Button type="submit">Submit</Button>
+        </div>
+        <p>Total Seek Time FCFS: {totalSeekTimeFCFS}</p>
+        <p>Total Seek Time SCAN: {totalSeekTimeSCAN}</p>
+        <p>Total Seek Time CSCAN: {totalSeekTimeCSCAN}</p>
     </form>
+
   );
+
 };
 
 export default DiskSchedulingInput;
-

@@ -1,4 +1,3 @@
-// index.js
 'use client'
 import React, { useState } from 'react';
 import Dropdown from "@/app/backpain/dropDown.jsx"; // Corrected import statement

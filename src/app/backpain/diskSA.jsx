@@ -1,61 +1,76 @@
-// diskSA.jsx
-export function FCFS_Disk_Scheduling(requests) {
-    let head_position = 0;
-    let current_request = 0;
-
-    while (current_request < requests.length) {
-        if (current_request!== head_position) {
-            head_position = current_request;
-            console.log(`Moved head to position ${head_position}`);
-        }
-        current_request++;
+export const calculatePositionsAndTotalSeekTime = (algorithm, requests, startCylinder, endCylinder, headStartCylinder) => {
+    if (!Array.isArray(requests)) {
+        console.error('Requests must be an array of numbers.');
+        return { positions: [], totalSeekTime: 0 };
     }
-}
 
-export function SCAN_Disk_Scheduling(requests) {
-    let head_position = 0;
-    let current_request = 0;
-    let direction = 1; // 1 for forward, -1 for backward
-    let last_request = requests[requests.length - 1];
-    let first_request = requests[0];
+    let positions = [];
+    let totalSeekTimeFCFS = 0;
+    let totalSeekTimeSCAN = 0;
+    let totalSeekTimeCSCAN = 0;
+    let currentCylinder = headStartCylinder;
 
-    while (current_request < requests.length) {
-        if (current_request!== head_position) {
-            head_position = current_request;
-            console.log(`Moved head to position ${head_position}`);
+    switch (algorithm) {
+      case 'FCFS':
+        requests.forEach(request => {
+          const distanceMoved = Math.abs(currentCylinder - request);
+          positions.push(currentCylinder);
+          totalSeekTimeFCFS += distanceMoved;
+          currentCylinder = request;
+        });
+        break;
+      case 'SCAN':
+        // Move towards the end of the disk
+        while (currentCylinder <= endCylinder) {
+          if (requests.includes(currentCylinder)) {
+            const distanceMoved = Math.abs(currentCylinder - startCylinder);
+            positions.push(currentCylinder);
+            totalSeekTimeSCAN += distanceMoved;
+          }
+          currentCylinder++;
         }
-
-        if (direction === 1 && current_request === last_request) {
-            direction = -1;
-        } else if (direction === -1 && current_request === first_request) {
-            direction = 1;
+        // Reverse direction and move towards the start of the disk
+        while (currentCylinder >= startCylinder) {
+          if (requests.includes(currentCylinder)) {
+            const distanceMoved = Math.abs(currentCylinder - startCylinder);
+            positions.push(currentCylinder);
+            totalSeekTimeSCAN += distanceMoved;
+          }
+          currentCylinder--;
         }
-
-        current_request += direction;
+        break;
+      case 'C-SCAN':
+        // Move towards the end of the disk
+        while (currentCylinder <= endCylinder) {
+          if (requests.includes(currentCylinder)) {
+            const distanceMoved = Math.abs(currentCylinder - startCylinder);
+            positions.push(currentCylinder);
+            totalSeekTimeCSCAN += distanceMoved;
+          }
+          currentCylinder++;
+        }
+        // Jump back to the start of the disk
+        currentCylinder = startCylinder + 1; // Assuming the disk wraps around
+        // Move towards the end of the disk again
+        while (currentCylinder <= endCylinder) {
+          if (requests.includes(currentCylinder)) {
+            const distanceMoved = Math.abs(currentCylinder - startCylinder);
+            positions.push(currentCylinder);
+            totalSeekTimeCSCAN += distanceMoved;
+          }
+          currentCylinder++;
+        }
+        break;
+      default:
+        console.log('Invalid algorithm');
+        return { positions: [], totalSeekTime: 0 };
     }
-}
 
-
-export function CSCAN_Disk_Scheduling(requests) {
-    let head_position = 0;
-    let current_request = 0;
-    let direction = 1; // 1 for forward, -1 for backward
-    let last_request = requests[requests.length - 1];
-    let first_request = requests[0];
-
-    while (current_request < requests.length) {
-        if (current_request!== head_position) {
-            head_position = current_request;
-            console.log(`Moved head to position ${head_position}`);
-        }
-
-        if (direction === 1 && current_request === last_request) {
-            direction = -1;
-        } else if (direction === -1 && current_request === first_request) {
-            direction = 1;
-        }
-
-        current_request += direction;
-    }
-}
-
+    return {
+        positions,
+        totalSeekTimeFCFS,
+        totalSeekTimeSCAN,
+        totalSeekTimeCSCAN
+      };
+      
+};
