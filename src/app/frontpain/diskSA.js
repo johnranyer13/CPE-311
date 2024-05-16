@@ -90,7 +90,22 @@ const DiskSchedulingInput = () => {
           <label style={{ marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
             Pending Requests:
           </label>
-          <Input placeholder="comma separated" type="text" value={pendingRequests.join(',')} onChange={(e) => setPendingRequests(e.target.value.split(',').map(Number))} required />
+          <textarea
+            placeholder="comma separated"
+            value={pendingRequests.join(',')}
+            onChange={(e) => {
+              try {
+                const trimmedInput = e.target.value.trim(); // Directly trim the input
+                const numericArray = trimmedInput.split(',').map(Number);
+                setPendingRequests(numericArray);
+              } catch (error) {
+                console.error("Error processing pending requests:", error);
+                // Optionally, reset pendingRequests to an empty array or handle the error differently
+                setPendingRequests([]);
+              }
+            }}
+            required
+          />
         </div>
       </div>
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
