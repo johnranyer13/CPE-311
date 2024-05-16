@@ -113,16 +113,16 @@ const calculateCSCAN = (requests, startCylinder, endCylinder, headStartCylinder)
     left.sort((a, b) => a - b);
     right.sort((a, b) => a - b);
 
-    console.log(`Sorted left vector including startCylinder: ${left}`);
-    console.log(`Sorted right vector including endCylinder: ${right}`);
+// console.log(`Sorted left vector including startCylinder: ${left}`);
+// console.log(`Sorted right vector including endCylinder: ${right}`);
 
 
 
-  // Log the initial setup
-  console.log(`Initial Setup: Start Cylinder = ${startCylinder}, End Cylinder = ${endCylinder}, Head Start Cylinder = ${headStartCylinder}`);
+// Log the initial setup
+// console.log(`Initial Setup: Start Cylinder = ${startCylinder}, End Cylinder = ${endCylinder}, Head Start Cylinder = ${headStartCylinder}`);
 
-  // Log the sorted requests
-  console.log(`Sorted Requests: ${requests.join(', ')}`);
+// Log the sorted requests
+// console.log(`Sorted Requests: ${requests.join(', ')}`);
 
             // Process the right array first
             for (let i = 0; i < right.length; i++) {
@@ -131,9 +131,10 @@ const calculateCSCAN = (requests, startCylinder, endCylinder, headStartCylinder)
               let distance = Math.abs(currentCylinder - headStartCylinder); // Calculate absolute distance
               totalSeekTime += distance; // Increase the total count
               headStartCylinder = currentCylinder; // Accessed track is now the new head
-              console.log(`Forward Movement: Current Cylinder = ${currentCylinder}, Distance Moved = ${distance}, Total Seek Time = ${totalSeekTime}`);
-              // Log the seek sequence after each movement
-              console.log(`Seek Sequence: ${positions.join(', ')}`);
+// Log the forward movement of the currentcylinder
+// console.log(`Forward Movement: Current Cylinder = ${currentCylinder}, Distance Moved = ${distance}, Total Seek Time = ${totalSeekTime}`);
+// Log the seek sequence after each movement
+// console.log(`Seek Sequence: ${positions.join(', ')}`);
             }
 
 
@@ -146,19 +147,19 @@ const calculateCSCAN = (requests, startCylinder, endCylinder, headStartCylinder)
             totalSeekTime += distance; // Increase the total count
             headStartCylinder = currentCylinder; // Accessed track is now the new head
 
-            // Log the current state
-            console.log(`Backward Movement: Current Cylinder = ${currentCylinder}, Distance Moved = ${distance}, Total Seek Time = ${totalSeekTime}`);
-            // Log the seek sequence after each movement
-            console.log(`Seek Sequence: ${positions.join(', ')}`);
+// Log the current state
+// console.log(`Backward Movement: Current Cylinder = ${currentCylinder}, Distance Moved = ${distance}, Total Seek Time = ${totalSeekTime}`);
+// Log the seek sequence after each movement
+// console.log(`Seek Sequence: ${positions.join(', ')}`);
           }
 
 
 
-  // Log the final positions and total seek time
-  console.log(`Final Positions: ${positions.join(', ')}`);
-  console.log(`Total Seek Time: ${totalSeekTime}`);
-  // Log the seek sequence
-console.log(`Seek Sequence: ${positions.join(', ')}`);
+// Log the final positions and total seek time
+// console.log(`Final Positions: ${positions.join(', ')}`);
+// console.log(`Total Seek Time: ${totalSeekTime}`);
+// Log the seek sequence
+// console.log(`Seek Sequence: ${positions.join(', ')}`);
 
   return { positions, totalSeekTime };
 }
@@ -193,80 +194,3 @@ export const calculatePositionsAndTotalSeekTime = (algorithm, requests, startCyl
 
   return result;
 };
-
-
-/* possible for c scan code:
-function calculateSCAN(requests, startCylinder, endCylinder, headStartCylinder) {
-  let positions = [];
-  let totalSeekTime = 0;
-  let currentCylinder = headStartCylinder;
-  let direction = 1; // 1 for forward, -1 for backward
-
-  // Separate requests into two lists based on their relative position to the starting head position
-  let left = [];
-  let right = [];
-  for (let i = 0; i < requests.length; i++) {
-    if (requests[i] < headStartCylinder) {
-      left.push(requests[i]);
-    } else if (requests[i] > headStartCylinder) {
-      right.push(requests[i]);
-    }
-  }
-
-    // Prepending startCylinder to the left array and endCylinder to the right array
-    left.unshift(startCylinder);
-    right.unshift(endCylinder);
-
-    // Sorting left and right vectors
-    left.sort((a, b) => a - b);
-    right.sort((a, b) => a - b);
-
-    console.log(`Sorted left vector including startCylinder: ${left}`);
-    console.log(`Sorted right vector including endCylinder: ${right}`);
-
-
-
-  // Log the initial setup
-  console.log(`Initial Setup: Start Cylinder = ${startCylinder}, End Cylinder = ${endCylinder}, Head Start Cylinder = ${headStartCylinder}`);
-
-  // Log the sorted requests
-  console.log(`Sorted Requests: ${requests.join(', ')}`);
-
-            // Process the right array first
-            for (let i = 0; i < right.length; i++) {
-              currentCylinder = right[i]; // Correctly assign the currentCylinder from the right array
-              positions.push(currentCylinder); // Append current track to seek sequence
-              let distance = Math.abs(currentCylinder - headStartCylinder); // Calculate absolute distance
-              totalSeekTime += distance; // Increase the total count
-              headStartCylinder = currentCylinder; // Accessed track is now the new head
-              console.log(`Forward Movement: Current Cylinder = ${currentCylinder}, Distance Moved = ${distance}, Total Seek Time = ${totalSeekTime}`);
-              // Log the seek sequence after each movement
-              console.log(`Seek Sequence: ${positions.join(', ')}`);
-            }
-
-
-          // Switch direction and process the left array from highest to lowest
-          direction *= -1; // Switch direction
-          for (let i = left.length - 1; i >= 0; i--) {
-            currentCylinder = left[i];
-            positions.push(currentCylinder); // Append current track to seek sequence
-            let distance = Math.abs(currentCylinder - headStartCylinder); // Calculate absolute distance
-            totalSeekTime += distance; // Increase the total count
-            headStartCylinder = currentCylinder; // Accessed track is now the new head
-
-            // Log the current state
-            console.log(`Backward Movement: Current Cylinder = ${currentCylinder}, Distance Moved = ${distance}, Total Seek Time = ${totalSeekTime}`);
-            // Log the seek sequence after each movement
-            console.log(`Seek Sequence: ${positions.join(', ')}`);
-          }
-
-
-  // Log the final positions and total seek time
-  console.log(`Final Positions: ${positions.join(', ')}`);
-  console.log(`Total Seek Time: ${totalSeekTime}`);
-  // Log the seek sequence
-console.log(`Seek Sequence: ${positions.join(', ')}`);
-
-  return { positions, totalSeekTime };
-}
- */
