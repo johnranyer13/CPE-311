@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button"
 import { Input } from '@/components/ui/input';
 import { calculatePositionsAndTotalSeekTime } from "@/app/backpain/diskSA.jsx";
@@ -25,9 +25,7 @@ const DiskSchedulingInput = () => {
   const [endCylinder, setEndCylinder] = useState(0);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [headStartCylinder, setHeadStartCylinder] = useState(0); // Added headStartCylinder state
-  const [totalSeekTimeFCFS, setTotalSeekTimeFCFS] = useState(0);
-  const [totalSeekTimeSCAN, setTotalSeekTimeSCAN] = useState(0);
-  const [totalSeekTimeCSCAN, setTotalSeekTimeCSCAN] = useState(0);
+  const [totalSeekTimes, setTotalSeekTimes] = useState({ FCFS: 0, SCAN: 0, CSCAN: 0 });
   const [positions, setPositions] = useState([]);
   const [fcfsChartData, setFcfsChartData] = useState({});
   const [scanChartData, setScanChartData] = useState({});
@@ -37,32 +35,28 @@ const DiskSchedulingInput = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setHeadStartCylinder(headStartCylinder); // Ensure headStartCylinder is updated before calculations
+    setHeadStartCylinder(headStartCylinder);
 
-    // Calculate for all algorithms
-    const fcfsResult = calculatePositionsAndTotalSeekTime('FCFS', pendingRequests, startCylinder, endCylinder, headStartCylinder);
-    const scanResult = calculatePositionsAndTotalSeekTime('SCAN', pendingRequests, startCylinder, endCylinder, headStartCylinder);
-    const cscanResult = calculatePositionsAndTotalSeekTime('C-SCAN', pendingRequests, startCylinder, endCylinder, headStartCylinder);
+    const algorithms = ['FCFS', 'SCAN', 'CSCAN'];
+    const results = algorithms.map(algorithm =>
+      calculatePositionsAndTotalSeekTime(algorithm, pendingRequests, startCylinder, endCylinder, headStartCylinder)
+    );
 
-    // Set state with the calculated results
-    setPositions(fcfsResult.positions);
-    setPositions(scanResult.positions);
-    setPositions(cscanResult.positions);
-    setTotalSeekTimeFCFS(fcfsResult.totalSeekTimeFCFS);
-    setTotalSeekTimeSCAN(scanResult.totalSeekTimeSCAN);
-    setTotalSeekTimeCSCAN(cscanResult.totalSeekTimeCSCAN);
-
-    // Debugging: Log the results
-    console.log(fcfsResult);
-    console.log(scanResult);
-    console.log(cscanResult);
-
-    // Log the total seek times
-    console.log(`Total Seek Time for SCAN: ${scanResult.totalSeekTimeSCAN}`);
-    console.log(`Total Seek Time for FCFS: ${fcfsResult.totalSeekTimeFCFS}`);
-    console.log(`Total Seek Time for C-SCAN: ${cscanResult.totalSeekTimeCSCAN}`);
-
+    // Simplify state updates
+    setTotalSeekTimes(results.reduce((acc, result, index) => ({
+     ...acc,
+      [algorithms[index]]: result.totalSeekTime
+    }), {}));
+    setPositions(results[0].positions); // Assuming you want to use the positions from the first algorithm
   };
+
+  useEffect(() => {
+    if (totalSeekTimes && totalSeekTimes.FCFS!== undefined && totalSeekTimes.SCAN!== undefined && totalSeekTimes.CSCAN!== undefined) {
+      console.log(totalSeekTimes.FCFS, totalSeekTimes.SCAN, totalSeekTimes.CSCAN);
+    }
+  }, [totalSeekTimes]);
+  
+  
 
 
   return (
@@ -102,13 +96,12 @@ const DiskSchedulingInput = () => {
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
           <Button type="submit">Submit</Button>
         </div>
-        <p>Total Seek Time FCFS: {totalSeekTimeFCFS}</p>
-        <p>Total Seek Time SCAN: {totalSeekTimeSCAN}</p>
-        <p>Total Seek Time CSCAN: {totalSeekTimeCSCAN}</p>
+        <p>Total Seek Time FCFS: {totalSeekTimes.FCFS}</p>
+        <p>Total Seek Time SCAN: {totalSeekTimes.SCAN}</p>
+        <p>Total Seek Time CSCAN: {totalSeekTimes.CSCAN}</p>
     </form>
 
   );
-
 };
 
 export default DiskSchedulingInput;
