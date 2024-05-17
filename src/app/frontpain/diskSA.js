@@ -63,25 +63,25 @@ const DiskSchedulingInput = () => {
     <form onSubmit={handleSubmit}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', minWidth: '300px' }}>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
+          <label style={{ marginLeft: '5px', marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
             Cylinder Size:
           </label>
             <Input type="number" value={cylinderSize} onChange={(e) => setCylinderSize(e.target.value)} required />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
+          <label style={{marginLeft: '5px', marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
             Start Cylinder:
           </label>
             <Input type="number" value={startCylinder} onChange={(e) => setStartCylinder(e.target.value)} required />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
+          <label style={{marginLeft: '5px', marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
             End Cylinder:
           </label>
             <Input type="number" value={endCylinder} onChange={(e) => setEndCylinder(e.target.value)} required />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
+          <label style={{marginLeft: '5px', marginRight: '10px', width: '100px' }}> {/* Adjusted width for better alignment */}
             Head Start Cylinder:
           </label>
             <Input type="number" value={headStartCylinder} onChange={(e) => setHeadStartCylinder(e.target.value)} required />
@@ -91,6 +91,14 @@ const DiskSchedulingInput = () => {
             Pending Requests:
           </label>
           <textarea
+            style={{
+              borderRadius: 'md',
+              border: '1px solid black',
+              textAlign: 'center', // Center the text inside the textarea
+              '::placeholder': {
+                textAlign: 'center', // Center the placeholder text
+              }
+            }}
             placeholder="comma separated"
             value={pendingRequests.join(',')}
             onChange={(e) => {
